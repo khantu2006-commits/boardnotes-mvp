@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#111827">
+  <title>BoardNotes — Video to PDF</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand-mark">BN</div>
+  <div><h1>BoardNotes</h1><p>Video → board frames + typed notes PDF</p></div>
+  <span class="free">FREE MVP</span>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="eyebrow">STUDY TOOL · MOBILE FIRST</div>
+    <h2>Lecture ko revision PDF mein badlo.</h2>
+    <p>Video se board ke snapshots nikalo, un par OCR try karo, phir images aur editable notes ek PDF mein export karo.</p>
+    <div class="privacy"><span>🔒</span> Video browser mein process hota hai; is MVP mein video upload server par nahi hota.</div>
+  </section>
+
+  <section class="panel">
+    <div class="step"><span>1</span><div><h3>Video add karo</h3><p>Local video is MVP ka working input hai.</p></div></div>
+    <label class="drop" id="dropZone">
+      <input id="videoFile" type="file" accept="video/*">
+      <span class="upload-icon">↑</span>
+      <strong>Video file choose karo</strong>
+      <small>MP4 / WebM · phone storage se select karein</small>
+    </label>
+    <div id="fileInfo" class="file-info hidden"></div>
+    <div class="divider"><span>OR</span></div>
+    <label class="field-label" for="youtubeUrl">YouTube link</label>
+    <div class="url-row"><input id="youtubeUrl" type="url" placeholder="https://www.youtube.com/watch?v=..."><button id="checkYoutube" class="secondary">Use link</button></div>
+    <p id="youtubeHelp" class="hint">YouTube link ko browser se directly read/extract karna blocked hota hai. Link note rahega; actual frame extraction ke liye video file select karein.</p>
+    <div class="controls">
+      <label class="field-label" for="interval">Frame interval</label>
+      <select id="interval"><option value="5">Every 5 seconds (more pages)</option><option value="10" selected>Every 10 seconds</option><option value="15">Every 15 seconds (lighter)</option><option value="30">Every 30 seconds (fast)</option></select>
+      <label class="check"><input id="ocrEnabled" type="checkbox" checked> Try OCR for printed/clear handwriting (experimental)</label>
+      <button id="processBtn" class="primary" disabled>Extract board frames</button>
+      <div id="status" class="status" aria-live="polite">Video choose karne ke baad extraction start karein.</div>
+      <progress id="progress" value="0" max="100" class="hidden"></progress>
+    </div>
+    <video id="sourceVideo" class="hidden" playsinline muted></video>
+    <canvas id="workCanvas" class="hidden"></canvas>
+  </section>
+
+  <section class="panel">
+    <div class="step"><span>2</span><div><h3>Board frames review karo</h3><p>Jo frames kaam ke nahi, unhe hata sakte ho.</p></div></div>
+    <div id="emptyFrames" class="empty">Abhi koi frames nahi. Pehle video process karein.</div>
+    <div id="framesGrid" class="frames-grid"></div>
+  </section>
+
+  <section class="panel">
+    <div class="step"><span>3</span><div><h3>Clean typed notes</h3><p>OCR sirf draft hai—formula aur handwriting ko zaroor check karein.</p></div></div>
+    <label class="field-label" for="notesTitle">PDF title</label>
+    <input id="notesTitle" type="text" value="Lecture Revision Notes" maxlength="100">
+    <label class="field-label" for="typedNotes">Typed notes (edit kar sakte hain)</label>
+    <textarea id="typedNotes" rows="9" placeholder="OCR text yahan aayega. Aap apne corrected notes bhi likh sakte hain.&#10;&#10;Tip: formulas ko export se pehle check karein."></textarea>
+    <div class="note-actions"><button id="ocrAllBtn" class="secondary" disabled>Run OCR on frames</button><button id="clearNotesBtn" class="ghost">Clear notes</button></div>
+    <p class="hint">OCR internet se Tesseract.js library load karta hai. Clear printed text par behtar; board handwriting, Hindi, symbols aur maths formulas galat read ho sakte hain.</p>
+  </section>
+
+  <section class="export panel">
+    <div class="step"><span>4</span><div><h3>PDF export</h3><p>Ek PDF: pehle typed notes, phir selected board frames.</p></div></div>
+    <button id="exportBtn" class="primary" disabled>Download PDF</button>
+    <p id="exportStatus" class="hint">PDF banane ke liye kam se kam ek frame ya typed notes hona chahiye.</p>
+  </section>
+
+  <section class="limits">
+    <h3>Is free MVP ki real limits</h3>
+    <ul>
+      <li><b>YouTube:</b> link alone se video frames nahi nikalte. YouTube ka cross-origin protection aur platform rules prevent direct browser extraction. Use a video file you have permission to process.</li>
+      <li><b>OCR:</b> board ki handwriting, Hindi, diagrams aur equations mein errors ho sakte hain. PDF mein original snapshots bhi rahenge, isliye unhe verify karein.</li>
+      <li><b>Phone performance:</b> 10–20 minute lecture ke liye 15–30 sec interval se shuru karein. Bahut saare high-resolution frames RAM/storage use karenge.</li>
+      <li><b>Internet:</b> PDF/OCR libraries CDN se load hoti hain; first use par internet chahiye. Video frames local device par process hote hain.</li>
+    </ul>
+  </section>
+</main>
+<footer>BoardNotes MVP · Free browser prototype · No account required</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
